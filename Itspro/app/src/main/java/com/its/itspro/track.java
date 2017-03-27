@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -20,10 +21,13 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 
@@ -49,9 +53,9 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
         //conn1 = container.getContext();
         //Log.i("Activity", conn1.toString());
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build();
         return inflater.inflate(R.layout.track, container, false);
     }
@@ -83,7 +87,7 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        
+        map = googleMap;
     }
 
 
@@ -129,8 +133,46 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i("entered onconnected", "true");
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION);
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Log.i("fused,","api");
+        lastlocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        Log.i("fused,","api");
+        if(lastlocation!=null){
 
+            lat = lastlocation.getLatitude();
+            lon = lastlocation.getLongitude();
+            LatLng now = new LatLng(lat,lon);
+            Log.i("lat", String.valueOf(lat));
+            Log.i("lon", String.valueOf(lon));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(now)
+                    .zoom(12)
+                    .bearing(0)
+                    .tilt(30)
+                    .build();
 
+            CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lon),12);
+            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(now,12));
+            map.addMarker(new MarkerOptions()
+                    .title("Current")
+                    .position(now));
+            Log.i("fused,","api");
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        }
        /* LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,lr,this);*/
     }
 
@@ -151,7 +193,7 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
             return;
         }
 
-        lastlocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
         if (lastlocation != null) {
             Log.i("lattitude", lastlocation.toString());
         }
@@ -171,8 +213,8 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
 
     @Override
     public void onLocationChanged(Location location) {
-        Log.i("LAT:  ", String.valueOf(lat));
-        Log.i("LON:  ", String.valueOf(lon));
+        Log.i("LAT:  ", String.valueOf(location.getLatitude()));
+        Log.i("LON:  ", String.valueOf(location.getLongitude()));
         Log.i("called","on location changed");
         lat = location.getLatitude();
         lon = location.getLongitude();
