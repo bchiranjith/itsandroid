@@ -6,7 +6,7 @@
     android:id="@+id/usertrack"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ridermain"
+    tools:context=".track"
     android:weightSum="5">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,8 +18,18 @@
         android:layout_weight="4"
         android:layout_height="0dp" />
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="L"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/currentlocationbutton"
+        android:textSize="18sp"/>
+
     <TextView
         android:layout_weight="1"
+        android:id="@+id/tracktext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="track"
