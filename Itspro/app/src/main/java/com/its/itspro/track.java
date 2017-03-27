@@ -2,6 +2,7 @@ package com.its.itspro;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,13 +22,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom;
 
@@ -77,8 +76,8 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
         getActivity().setTitle("Track yourself");
 
         lr = LocationRequest.create();
-        lr.setInterval(10000);
-        lr.setFastestInterval(7000);
+        lr.setInterval(5000);
+        lr.setFastestInterval(1000);
         lr.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
@@ -148,9 +147,10 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
             return;
         }
         Log.i("fused,","api");
-        lastlocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,lr,this);
+       // lastlocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         Log.i("fused,","api");
-        if(lastlocation!=null){
+        /*if(lastlocation!=null){
 
             lat = lastlocation.getLatitude();
             lon = lastlocation.getLongitude();
@@ -163,7 +163,6 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
                     .bearing(0)
                     .tilt(30)
                     .build();
-
             CameraUpdate update = CameraUpdateFactory.newLatLngZoom(new LatLng(lat,lon),12);
             //map.moveCamera(CameraUpdateFactory.newLatLngZoom(now,12));
             map.addMarker(new MarkerOptions()
@@ -172,7 +171,7 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
             Log.i("fused,","api");
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        }
+        }*/
        /* LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,lr,this);*/
     }
 
@@ -218,7 +217,18 @@ public class track extends Fragment implements OnMapReadyCallback, GoogleApiClie
         Log.i("called","on location changed");
         lat = location.getLatitude();
         lon = location.getLongitude();
-        CameraUpdate update = newLatLngZoom(new LatLng(lat,lon),12);
+        LatLng now = new LatLng(lat,lon);
+        CameraUpdate update = newLatLngZoom(new LatLng(lat,lon),17);
+        /*map.addPolyline(new PolylineOptions()
+        .add(now)
+        .color(Color.DKGRAY)
+        .geodesic(true)
+        .width(1));*/
+        map.addCircle(new CircleOptions()
+                .radius(2)
+                .fillColor(Color.CYAN)
+                .clickable(true)
+                .center(now));
         map.animateCamera(update);
     }
 }
