@@ -19,6 +19,7 @@ public class ridermain extends AppCompatActivity implements NavigationView.OnNav
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ridermain);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -81,10 +82,9 @@ public class ridermain extends AppCompatActivity implements NavigationView.OnNav
         if(fragment!= null){
 
             FragmentTransaction transaction =  getSupportFragmentManager().beginTransaction();
-            Log.i("container","initialized");
             transaction.replace(R.id.container,fragment);
             transaction.commit();
-
+            Log.i("fragment transaction","complete");
         }
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         drawerLayout.closeDrawer(GravityCompat.START);
