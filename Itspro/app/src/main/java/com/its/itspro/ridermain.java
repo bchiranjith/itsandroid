@@ -33,6 +33,7 @@ public class ridermain extends AppCompatActivity implements NavigationView.OnNav
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, new usermap()).commit();
+            setTitle("Booking");
         }
 
     }
